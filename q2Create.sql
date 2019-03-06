@@ -1,10 +1,3 @@
--- this file should contain the code required to create the auxiliary structures, for query 2
--- this file will be given 10 minutes to run. Then it will be killed
--- The file will be invoked with timeout 10m psql -d uni -f q2Create.sql
--- Remember that the database (including the auxiliary structures) needs to be less than 11 GB.
--- This file will be executed with postgres -d uni -f q2Create.sql 
-
--- q2:
 CREATE MATERIALIZED VIEW excellentStudents(studentid,gpa) AS
 	With noFailure(studentid,degreeid) AS(
 			SELECT studentregistrationstodegrees.studentid,studentregistrationstodegrees.degreeid
@@ -27,8 +20,6 @@ CREATE MATERIALIZED VIEW excellentStudents(studentid,gpa) AS
 	SELECT nerdyStudents.studentid,CAST (nerdyStudents.weightedtotalgrades AS FLOAT)/CAST(nerdyStudents.totalects AS FLOAT) as gpa
 	FROM nerdyStudents, degrees
 	WHERE nerdyStudents.degreeid=degrees.degreeid AND nerdyStudents.totalects>=degrees.totalects;
-
--- q3:
 Create TEMP VIEW sufficientGrade(studentid,degreeid,courseid,ect) AS
 	SELECT studentregistrationstodegrees.studentid,studentregistrationstodegrees.degreeid,courseoffers.courseid,max(courseregistrations.grade),courses.ects
 	FROM studentregistrationstodegrees, courseregistrations,courses,courseoffers
@@ -44,11 +35,7 @@ CREATE TEMP VIEW activeStudents(studentid,degreeid) AS
 	SELECT totalECTS.studentid,degrees.degreeid
 	FROM totalECTS, degrees
 	WHERE totalECTS.degreeid=degrees.degreeid AND totalECTS.totalECTS<degrees.totalects;
-
--- q4:
 CREATE INDEX idx_studentToDegree ON StudentRegistrationsToDegrees(DegreeId, StudentId);
-
--- q6:
 CREATE MATERIALIZED VIEW ExcellentCourseStudents(StudentId, NumberOfCoursesWhereExcellent) AS
     WITH
         HighestGradeCourseOffers AS (
@@ -61,10 +48,3 @@ CREATE MATERIALIZED VIEW ExcellentCourseStudents(StudentId, NumberOfCoursesWhere
         FROM HighestGradeCourseOffers AS gco, StudentRegistrationsToDegrees AS st2deg, CourseRegistrations AS cr 
             WHERE gco.CourseOfferId=cr.CourseOfferId AND cr.StudentRegistrationId=st2deg.StudentRegistrationId AND cr.Grade=gco.highestGrade 
                 GROUP BY st2deg.StudentId;
-
--- q7:
-CREATE MATERIALIZED VIEW maxGrades(studentid, degreeid, courseid, maxgrade, ect) AS (
-    SELECT srtd.studentid, co.courseid, max(cr.grade), c.ects
-        FROM studentRegistrationstoDegrees AS srtd, CourseRegistrations AS cr, courses AS c, courseoffers AS co 
-            WHERE srtd.studentRegistrationId = cr.studentRegistrationId AND co.courseOfferId=cr.courseOfferId AND c.courseId = co.courseId
-                GROUP BY srtd.studentid, srtd.degreeId, co.courseId, c.ects;
