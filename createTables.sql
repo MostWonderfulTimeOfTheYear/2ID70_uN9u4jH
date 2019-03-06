@@ -1,8 +1,3 @@
--- This file should create the tables
--- An example follows, replace it with your own commands.
--- SQL files can be executed from command-line using psql -d THE_DATABASE_NAME -f THE_FILENAME
--- Notice the UNLOGGED option, which drastically increases performance and reduces space usage
-
 CREATE UNLOGGED TABLE IF NOT EXISTS Students(StudentId int PRIMARY KEY, StudentName varchar(50), Address varchar(200), BirthyearStudent int, Gender char);
 CREATE UNLOGGED TABLE IF NOT EXISTS Degrees(DegreeId int PRIMARY KEY, Dept varchar(50), DegreeDescription varchar(200), TotalECTS int);
 CREATE UNLOGGED TABLE IF NOT EXISTS StudentRegistrationsToDegrees(StudentRegistrationId int PRIMARY KEY, StudentId int REFERENCES Students(StudentId), DegreeId int REFERENCES Degrees(DegreeId), RegistrationYear int);
